@@ -73,7 +73,7 @@ export class HeroService {
       return;
     }
     this.sharedService.updateUserMoney(-cost);
-    const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'rarity', ++hero.lv);
+    const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'lv', ++hero.lv);
     this.sharedService.updateHeroData(heroes);
     this.messageService.add(`Hero: ${hero.name} lv up cost ${cost} energy`);
   }
