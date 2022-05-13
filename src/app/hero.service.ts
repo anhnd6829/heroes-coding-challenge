@@ -42,7 +42,7 @@ export class HeroService {
 
   upgradeHero(id: number) {
     const hero = this.sharedService.heroes.getValue().find(h => h.id === id)!;
-    const cost = hero.rarity * 100;
+    const cost = hero.rarity * hero.rarity * 100;
     if (!hero.isUnlocked) {
       this.messageService.add(`Hero must be unlocked first`);
       return;
