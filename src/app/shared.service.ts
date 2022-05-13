@@ -19,7 +19,7 @@ export class SharedService {
   setupData():void {
     window.localStorage.getItem('heroMoney') ? null : window.localStorage.setItem('heroMoney', JSON.stringify(100));
     window.localStorage.getItem('herosData') ? null : window.localStorage.setItem('herosData', JSON.stringify(HEROES));
-    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData')!));
+    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
   }
 
   updateUserMoney(money: number) {
@@ -34,7 +34,7 @@ export class SharedService {
     if (!!heroes) {
       window.localStorage.setItem('herosData', JSON.stringify(heroes));
     }
-    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData')!));
+    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
   }
 
   async getRollDice(ratio: number): Promise<boolean> {

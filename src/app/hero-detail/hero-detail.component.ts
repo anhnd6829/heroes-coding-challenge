@@ -39,4 +39,8 @@ export class HeroDetailComponent implements OnInit {
   upgrade(hero: Hero): void {
     this.heroService.upgradeHero(hero.id);
   }
+
+  train(hero: Hero): void {
+    this.heroService.trainHero(hero.id);
+  }
 }

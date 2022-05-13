@@ -43,13 +43,38 @@ export class HeroService {
   upgradeHero(id: number) {
     const hero = this.sharedService.heroes.getValue().find(h => h.id === id)!;
     const cost = hero.rarity * 100;
+    if (!hero.isUnlocked) {
+      this.messageService.add(`Hero must be unlocked first`);
+      return;
+    }
     if (this.sharedService.moneyCurrent < cost) {
-      this.messageService.add(`Not enough energy`);
+      this.messageService.add(`Not enough energy: ${cost}`);
       return;
     }
     this.sharedService.updateUserMoney(-cost);
-    const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'rarity', hero.rarity++);
+    this.sharedService.getRollDice(1/(hero.rarity*2)).then((result) => {
+      if (result) {
+        const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'rarity', ++hero.rarity);
+        this.sharedService.updateHeroData(heroes);
+      }
+      this.messageService.add(`Hero: ${hero.name} upgrade ${result ? `success` : `failed`} with ${cost} energy`);
+    });
+  }
+
+  trainHero(id: number) {
+    const hero = this.sharedService.heroes.getValue().find(h => h.id === id)!;
+    const cost = hero.lv * 10;
+    if (!hero.isUnlocked) {
+      this.messageService.add(`Hero must be unlocked first`);
+      return;
+    }
+    if (this.sharedService.moneyCurrent < cost) {
+      this.messageService.add(`Not enough energy: ${cost}`);
+      return;
+    }
+    this.sharedService.updateUserMoney(-cost);
+    const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'rarity', ++hero.lv);
     this.sharedService.updateHeroData(heroes);
-    this.messageService.add(`Hero upgrade: ${hero.name} ${cost}`);
+    this.messageService.add(`Hero: ${hero.name} lv up cost ${cost} energy`);
   }
 }
