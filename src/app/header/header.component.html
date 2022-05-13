@@ -1,0 +1,8 @@
+<h1>{{title}}</h1>
+<div class="d-flex justify-content-between">
+  <nav>
+    <a routerLink="/dashboard">Dashboard</a>
+    <a routerLink="/heroes">Heroes</a>
+  </nav>
+  <div class="align-middle">Energy: {{money}} <button type="button" (click)="clean()">clean heroData</button></div>
+</div>
