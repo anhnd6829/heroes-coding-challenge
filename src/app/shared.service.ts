@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HeroService } from './hero.service';
 import { MessageService } from './message.service';
-import { HEROES } from './mock-data';
+import { ARMORS, HEROES, WEAPONS } from './mock-data';
 import * as _ from 'lodash';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Hero } from './model/mob.model';
+import { Armor, Weapon } from './model/item.model';
 @Injectable({ providedIn: 'root' })
 export class SharedService {
   heroes: BehaviorSubject<Hero[]> = new BehaviorSubject<Hero[]>([]);
@@ -14,6 +15,14 @@ export class SharedService {
 
   get moneyCurrent() {
     return +window.localStorage.getItem('heroMoney')!;
+  }
+
+  getArmors(): Observable<Armor[]> {
+    return of(ARMORS);
+  }
+
+  getWeapons(): Observable<Weapon[]> {
+    return of(WEAPONS);
   }
 
   setupData():void {

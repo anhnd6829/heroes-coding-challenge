@@ -40,6 +40,18 @@ export class HeroService {
     this.messageService.add(`Hero unlocked: ${hero.name}`);
   }
 
+  wearItem(heroId: number, itemId: number, type: string) {
+    const hero = this.sharedService.heroes.getValue().find(h => h.id === heroId)!;
+    if (!hero.isUnlocked) {
+      this.messageService.add(`Hero must be unlocked first`);
+      return;
+    }
+    const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), heroId, type, itemId);
+    window.localStorage.setItem('herosData', JSON.stringify(heroes));
+    this.sharedService.updateHeroData();
+    this.messageService.add(`Hero weared new item`);
+  }
+
   upgradeHero(id: number) {
     const hero = this.sharedService.heroes.getValue().find(h => h.id === id)!;
     const cost = hero.rarity * hero.rarity * 100;

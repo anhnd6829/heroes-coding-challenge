@@ -1,6 +1,7 @@
 export interface Item {
   id: number;
   name: string;
+  imgSrc?: string;
   passive?: () => any;
 }
 
