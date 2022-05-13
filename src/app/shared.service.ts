@@ -8,24 +8,33 @@ import { Hero } from './model/mob.model';
 @Injectable({ providedIn: 'root' })
 export class SharedService {
   heroes: BehaviorSubject<Hero[]> = new BehaviorSubject<Hero[]>([]);
-  money: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   constructor(
     private messageService: MessageService
   ) { }
 
   get moneyCurrent() {
-    return window.localStorage.getItem('heroMoney') || 0;
+    return +window.localStorage.getItem('heroMoney')!;
   }
 
   setupData():void {
-    window.localStorage.getItem('heroMoney') ? null : window.localStorage.setItem('heroMoney', JSON.stringify(0));
+    window.localStorage.getItem('heroMoney') ? null : window.localStorage.setItem('heroMoney', JSON.stringify(100));
     window.localStorage.getItem('herosData') ? null : window.localStorage.setItem('herosData', JSON.stringify(HEROES));
-    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
-    this.money.next(JSON.parse(window.localStorage.getItem('heroMoney') || '0'));
+    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData')!));
   }
 
-  updateHeroData(): void {
-    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
+  updateUserMoney(money: number) {
+    this.updateReplaceMoneyData(this.moneyCurrent + money);
+  }
+
+  updateReplaceMoneyData(money: number): void {
+    window.localStorage.setItem('heroMoney', JSON.stringify(money));
+  }
+
+  updateHeroData(heroes?: Hero[]): void {
+    if (!!heroes) {
+      window.localStorage.setItem('herosData', JSON.stringify(heroes));
+    }
+    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData')!));
   }
 
   async getRollDice(ratio: number): Promise<boolean> {

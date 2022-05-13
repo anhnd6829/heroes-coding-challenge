@@ -35,4 +35,8 @@ export class HeroDetailComponent implements OnInit {
   unlock(hero: Hero): void {
     this.heroService.unlock(hero.id);
   }
+
+  upgrade(hero: Hero): void {
+    this.heroService.upgradeHero(hero.id);
+  }
 }

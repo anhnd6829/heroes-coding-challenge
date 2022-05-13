@@ -22,6 +22,8 @@ export class HeaderComponent implements OnInit {
 
   clean() {
     window.localStorage.removeItem('herosData');
+    window.localStorage.removeItem('heroMoney');
     this.sharedService.updateHeroData();
+    this.sharedService.setupData();
   }
 }

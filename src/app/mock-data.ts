@@ -3,7 +3,7 @@ import { Armor, Weapon } from './model/item.model';
 import { AppUserConfig } from './model/config.model';
 
 export const HEROES: Hero[] = [
-  { id: 1, name: 'Dr Nice', lv: 1, hp: 100, atk: 10, agi: 10, isUnlocked: false, rarity: 1, price: 10 },
+  { id: 1, name: 'Dr Nice', lv: 1, hp: 100, atk: 10, agi: 10, isUnlocked: false, rarity: 1, price: 50 },
   { id: 2, name: 'Narco', lv: 1, hp: 250, atk: 5, agi: 5, isUnlocked: false, rarity: 1, price: 100 },
   { id: 3, name: 'Bombasto', lv: 1, hp: 100, atk: 15, agi: 5, isUnlocked: false, rarity: 1, price: 200 },
   { id: 4, name: 'Celeritas', lv: 1, hp: 100, atk: 5, agi: 15, isUnlocked: false, rarity: 1, price: 200 },

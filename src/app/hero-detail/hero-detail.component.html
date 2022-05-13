@@ -6,8 +6,15 @@
     <input id="hero-name" [(ngModel)]="hero.name" placeholder="Hero name"/>
   </div>
   <div>
+    <label for="hero-name">Hero rare: {{hero.rarity}}</label>
+  </div>
+  <div>
+    <label for="hero-name">Hero price: {{hero.price}}</label>
+  </div>
+  <div>
     <label for="hero-name">Hero unlocked: {{hero.isUnlocked}}</label>
   </div>
   <button (click)="goBack()">Back</button>
   <button *ngIf="!hero?.isUnlocked" (click)="unlock(hero)">Unlock</button>
+  <button type="button" (click)="upgrade(hero)">Upgrade</button>
 </div>
