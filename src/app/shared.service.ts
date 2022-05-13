@@ -3,9 +3,12 @@ import { HeroService } from './hero.service';
 import { MessageService } from './message.service';
 import { HEROES } from './mock-data';
 import * as _ from 'lodash';
+import { BehaviorSubject } from 'rxjs';
+import { Hero } from './model/mob.model';
 @Injectable({ providedIn: 'root' })
 export class SharedService {
-
+  heroes: BehaviorSubject<Hero[]> = new BehaviorSubject<Hero[]>([]);
+  money: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   constructor(
     private messageService: MessageService
   ) { }
@@ -17,9 +20,12 @@ export class SharedService {
   setupData():void {
     window.localStorage.getItem('heroMoney') ? null : window.localStorage.setItem('heroMoney', JSON.stringify(0));
     window.localStorage.getItem('herosData') ? null : window.localStorage.setItem('herosData', JSON.stringify(HEROES));
+    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
+    this.money.next(JSON.parse(window.localStorage.getItem('heroMoney') || '0'));
   }
 
   updateHeroData(): void {
+    this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
   }
 
   async getRollDice(ratio: number): Promise<boolean> {
@@ -35,7 +41,6 @@ export class SharedService {
          break; //Stop this loop, we found it!
       }
     }
-    console.log(arrayVal);
     return array;
  }
 

@@ -9,29 +9,27 @@ import { SharedService } from './shared.service';
 
 @Injectable({ providedIn: 'root' })
 export class HeroService {
-  heroes: BehaviorSubject<Hero[]> = new BehaviorSubject<Hero[]>([]);
   constructor(
     private messageService: MessageService,
     private sharedService: SharedService
     ) { }
 
-  getHeroes(): BehaviorSubject<Hero[]> {
-    const data = window.localStorage.getItem('herosData');
-    this.heroes.next(JSON.parse(data || '[]'));
-    this.messageService.add('HeroService: fetched heroes');
-    return this.heroes;
+  getHeroes(): Observable<Hero[]> {
+    return this.sharedService.heroes.asObservable();
+    // this.messageService.add('HeroService: fetched heroes');
   }
 
-  getHero(id: number): Observable<Hero> {
+  getHero(id: number): Hero {
     // For now, assume that a hero with the specified `id` always exists.
     // Error handling will be added in the next step of the tutorial.
-    const hero = this.getHeroes().getValue().find(h => h.id === id)!;
+    const hero = this.sharedService.heroes.getValue().find(h => h.id === id)!;
     this.messageService.add(`HeroService: fetched hero id=${id}`);
-    return of(hero);
+    return hero;
   }
 
   unlock(id: number) {
-    this.heroes.next(this.sharedService.updateItem(this.getHeroes().getValue(), id, 'isUnlocked', true));
-    window.localStorage.setItem('herosData', JSON.stringify(this.heroes.getValue()));
+    const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'isUnlocked', true);
+    window.localStorage.setItem('herosData', JSON.stringify(heroes));
+    this.sharedService.updateHeroData();
   }
 }
