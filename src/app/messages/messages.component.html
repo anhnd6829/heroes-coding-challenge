@@ -1,8 +1,13 @@
 <div *ngIf="messageService.messages.length" class="message-hub">
 
   <h2>Messages</h2>
-  <button class="clear"
-          (click)="messageService.clear()">Clear messages</button>
-  <div *ngFor="let message of messageService.messages"> {{message}} </div>
+  <button class="clear" (click)="messageService.clear()">Clear messages</button>
+  <div class="messages-box">
+    <div class=".text-wrap "
+      *ngFor="let message of messageService.messages.reverse(); let i = index"
+      [ngClass]="i === 0 ? 'text-primary fs-5' : 'text-muted'"> {{message}}
+    </div>
+  </div>
+
 
 </div>

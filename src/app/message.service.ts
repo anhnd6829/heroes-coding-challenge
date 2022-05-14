@@ -5,7 +5,8 @@ export class MessageService {
   messages: string[] = [];
 
   add(message: string) {
-    this.messages.push(message);
+    const current = new Date();
+    this.messages.push('(' +current.getHours().toLocaleString() +':'+ current.getMinutes().toLocaleString() + ') ' + message);
   }
 
   clear() {

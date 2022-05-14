@@ -10,8 +10,9 @@
             <div class="card-block">
               <br>
               <h4>{{ hero.name | uppercase }}</h4>
-              <div><span>Index: </span>{{ hero.id }}</div>
               <div>Rarity rank: {{ hero.rarity}}</div>
+              <div>Unlock cost: {{ hero.price}}</div>
+              <div>RankUp cost: {{ hero.rarity * hero.rarity * 100}}</div>
               <br>
               <strong>Attribute:</strong>
               <div>Level: {{ hero.lv}}</div>
