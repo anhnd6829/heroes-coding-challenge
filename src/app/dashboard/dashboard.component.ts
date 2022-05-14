@@ -59,6 +59,9 @@ export class DashboardComponent implements OnInit {
     this.gameState = GAME_STATE.fight;
     const battleHeroIter = this.battleHero.values();
     this.battleService.fightTurn.subscribe(turn => {
+      if (turn < 0) {
+        this.gameState = GAME_STATE.prepare;
+      }
       this.fightTurn = turn;
       this.currentMobFighting = _.cloneDeep(this.battleService.currentMobFighting);
       this.currentHeroFighting = _.cloneDeep(this.battleService.currentHeroFighting);

@@ -131,6 +131,7 @@ export class BattleServiceService {
         this.heroList.splice(0, 1);
         if (this.heroList.length <= 0) {
           this.currentHeroFighting = _.cloneDeep(this.heroList[0]);
+          this.messageService.add(`This round Lose at turn ${this.fightTurn.getValue()}!`);
           this.fightTurn.next(-1);
           return;
         }
