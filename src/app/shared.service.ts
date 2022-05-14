@@ -32,6 +32,7 @@ export class SharedService {
   }
 
   updateUserMoney(money: number) {
+    this.messageService.add(`${money} energy updated to account`);
     this.updateReplaceMoneyData(this.moneyCurrent + money);
   }
 
@@ -46,9 +47,14 @@ export class SharedService {
     this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
   }
 
-  async getRollDice(ratio: number): Promise<boolean> {
+  // async getRollDice(ratio: number): Promise<boolean> {
+  //   const dice = Math.random();
+  //   return dice <= ratio;
+  // }
+
+  getRollDice(ratio: number): boolean{
     const dice = Math.random();
-    return dice >= ratio;
+    return dice <= ratio;
   }
 
   updateItem(arrayVal: any[], id: number, att: string, value: any): any[] {

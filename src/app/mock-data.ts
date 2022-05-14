@@ -33,6 +33,11 @@ export const CONFIG: AppUserConfig = {
   teamSizeMaximun: 3,
   bossSpawnRarity: 0.1,
   startMoney: 300,
+  baseDodgeCritChange: 0.1,
+  maxCritChange: 0.7,
+  maxDodgeChange: 0.4,
+  critDamage: 2.5,
+  attackTime: 1000,
 }
 
 export enum GAME_STATE {

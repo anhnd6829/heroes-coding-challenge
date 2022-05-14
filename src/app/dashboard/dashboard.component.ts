@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import * as _ from 'lodash';
+import { Observable } from 'rxjs';
 import { BattleServiceService } from '../battle-service/battle-service.service';
 import { HeroService } from '../hero.service';
 import { MessageService } from '../message.service';
@@ -17,6 +19,9 @@ export class DashboardComponent implements OnInit {
   battleHero: Map<number, Hero> = new Map<number, Hero>();
   monsters: Mob[] = [];
   gameState = GAME_STATE.prepare;
+  fightTurn: number = 0;
+  currentMobFighting: Mob | undefined;
+  currentHeroFighting: Hero | undefined;
   constructor(
     private heroService: HeroService,
     private sharedService: SharedService,
@@ -50,7 +55,15 @@ export class DashboardComponent implements OnInit {
   }
 
   onStartFight(): void {
-
+    this.messageService.add('Fight Started');
+    this.gameState = GAME_STATE.fight;
+    const battleHeroIter = this.battleHero.values();
+    this.battleService.fightTurn.subscribe(turn => {
+      this.fightTurn = turn;
+      this.currentMobFighting = _.cloneDeep(this.battleService.currentMobFighting);
+      this.currentHeroFighting = _.cloneDeep(this.battleService.currentHeroFighting);
+    });
+    this.battleService.setupFigtht(battleHeroIter);
   }
 
   setHeroInBattle(hero: Hero):void {
@@ -77,10 +90,9 @@ export class DashboardComponent implements OnInit {
       return;
     }
     const highestLevel = Math.max(...[...[...this.battleHero.values()].map(val => {return val.lv})]);
-    console.log(highestLevel);
     this.battleService.prepareMonster(highestLevel, teamSize).then((monsters) => {
       this.monsters = monsters;
-      console.log(this.monsters);
+      this.messageService.add('Prepare turn Ended');
     });
   }
 }

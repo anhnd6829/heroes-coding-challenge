@@ -68,13 +68,12 @@ export class HeroService {
       return;
     }
     this.sharedService.updateUserMoney(-cost);
-    this.sharedService.getRollDice(1/(hero.rarity*2)).then((result) => {
-      if (result) {
-        const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'rarity', ++hero.rarity);
-        this.sharedService.updateHeroData(heroes);
-      }
-      this.messageService.add(`Hero: ${hero.name} upgrade ${result ? `success` : `failed`} with ${cost} energy`);
-    });
+    const result = this.sharedService.getRollDice(1/(hero.rarity*2));
+    if (result) {
+      const heroes: Hero[] = this.sharedService.updateItem(this.sharedService.heroes.getValue(), id, 'rarity', ++hero.rarity);
+      this.sharedService.updateHeroData(heroes);
+    }
+    this.messageService.add(`Hero: ${hero.name} upgrade ${result ? `success` : `failed`} with ${cost} energy`);
   }
 
   trainHero(id: number) {
