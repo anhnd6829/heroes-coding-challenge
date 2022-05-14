@@ -1,20 +1,22 @@
 <div class="heroes-menu">
-  <a *ngFor="let hero of heroes" class="text-info" (click)="setHeroInBattle(hero)">
+  <div *ngFor="let hero of heroes" class="card square-20 border-0 border text-center text-primary open-pointer" (click)="setHeroInBattle(hero)">
     <!-- <div>
 
     </div> -->
-    <img class="card-img-top" [src]="hero?.imgSrc" alt="Item image load failed"/>
+    <img class="card-img-top" [ngClass]="getRankCss(hero.rarity)" [src]="hero?.imgSrc" alt="Item image load failed"/>
       {{hero.name}}
-  </a>
+  </div>
 </div>
 <button type="button" class="btn btn-primary" *ngIf="!isPlaying" (click)="onPlay()">Play</button>
 <div class="row" *ngIf="isPlaying">
   <div class="col">
     <div class="row">
       <h4>Hero:</h4>
-      <div class="col" *ngFor="let heroBattle of getHeroInBattle ">
-        <img class="card-img-top" [src]="heroBattle?.imgSrc" alt="Item image load failed"/>
+      <div class="col-4" *ngFor="let heroBattle of getHeroInBattle ">
+        <div class="card open-pointer">
+          <img class="card-img-top border-rarity border-danger" [src]="heroBattle?.imgSrc" alt="Item image load failed"/>
           {{heroBattle.name}}
+        </div>
       </div>
     </div>
   </div>

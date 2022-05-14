@@ -4,7 +4,7 @@
       <div class="card">
         <div class="row no-gutters">
           <div class="col-auto">
-            <img class="card-img-top" [src]="hero?.imgSrc" alt="Item image load failed"/>
+            <img class="card-img-top" [ngClass]="getRankCss(hero.rarity)" [src]="hero?.imgSrc" alt="Item image load failed"/>
           </div>
           <div class="col">
             <div class="card-block">

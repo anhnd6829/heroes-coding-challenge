@@ -62,5 +62,27 @@ export class SharedService {
     return array;
  }
 
+ getRankCss(rank: number): string {
+  switch(rank) {
+    case 1: {
+      return 'border-success border-5 border';
+    }
+    case 2: {
+      return 'border-info border-5 border';
+    }
+    case 3: {
+      return 'border-primary border-5 border';
+    }
+    case 4: {
+      return 'border-warning border-5 border';
+    }
+    case 5: {
+      return 'border-danger border-5 border';
+    }
+    default: {
+      return 'border-secondary border-5 border';
+    }
 
+  }
+ }
 }

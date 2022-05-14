@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HeroService } from '../hero.service';
+import { CONFIG } from '../mock-data';
 import { Hero } from '../model/mob.model';
 import { SharedService } from '../shared.service';
 
@@ -23,7 +24,10 @@ export class DashboardComponent implements OnInit {
   }
 
   getHeroes(): void {
-    this.heroService.getHeroes().subscribe(heroes => this.heroes = heroes.filter(val => val.isUnlocked).slice(0, 5));
+    this.heroService.getHeroes().subscribe(heroes => {
+      this.heroes = heroes.filter(val => val.isUnlocked).slice(0, 5);
+      this.battleHero.clear();
+    });
   }
 
   get getHeroInBattle(): Hero[] {
@@ -38,7 +42,13 @@ export class DashboardComponent implements OnInit {
     if (this.battleHero.has(hero.id)) {
       this.battleHero.delete(hero.id)
     } else {
+      if (this.battleHero.size >= CONFIG.teamSizeMaximun) {
+        return;
+      }
       this.battleHero.set(hero.id, hero);
     }
+  }
+  getRankCss(rank: number): string {
+    return this.sharedService.getRankCss(rank);
   }
 }

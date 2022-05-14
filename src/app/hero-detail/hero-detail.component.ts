@@ -42,6 +42,9 @@ export class HeroDetailComponent implements OnInit {
       this.armor = ARMORS.find(a => a.id === this.hero?.currentArmorId);
     });
   }
+  getRankCss(rank: number): string {
+    return this.sharedService.getRankCss(rank);
+  }
 
   getArmors(): void {
     this.sharedService.getArmors().subscribe(a => this.armors = a);
