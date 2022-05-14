@@ -1,7 +1,25 @@
-<h2>Top Heroes</h2>
 <div class="heroes-menu">
-  <a *ngFor="let hero of heroes"
-    routerLink="/detail/{{hero.id}}">
-    {{hero.name}}
+  <a *ngFor="let hero of heroes" class="text-info" (click)="setHeroInBattle(hero)">
+    <!-- <div>
+
+    </div> -->
+    <img class="card-img-top" [src]="hero?.imgSrc" alt="Item image load failed"/>
+      {{hero.name}}
   </a>
 </div>
+<button type="button" class="btn btn-primary" *ngIf="!isPlaying" (click)="onPlay()">Play</button>
+<div class="row" *ngIf="isPlaying">
+  <div class="col">
+    <div class="row">
+      <h4>Hero:</h4>
+      <div class="col" *ngFor="let heroBattle of getHeroInBattle ">
+        <img class="card-img-top" [src]="heroBattle?.imgSrc" alt="Item image load failed"/>
+          {{heroBattle.name}}
+      </div>
+    </div>
+  </div>
+  <div class="col">
+
+  </div>
+</div>
+

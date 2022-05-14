@@ -11,10 +11,10 @@ export const HEROES: Hero[] = [
 ];
 
 export const MOBS: Mob[] = [
-  { id: 1, name: 'Zombie', lv: 1, hp: 150, atk: 7, agi: 7 },
-  { id: 1, name: 'Ghost', lv: 1, hp: 120, atk: 10, agi: 5 },
-  { id: 1, name: 'Orc', lv: 1, hp: 250, atk: 10, agi: 5 },
-  { id: 1, name: 'Demon', lv: 1, hp: 250, atk: 10, agi: 20 },
+  { id: 1, name: 'Zombie', lv: 1, hp: 150, atk: 7, agi: 7, imgSrc: 'assets/images/char4.jpg' },
+  { id: 1, name: 'Ghost', lv: 1, hp: 120, atk: 10, agi: 5, imgSrc: 'assets/images/char4.jpg' },
+  { id: 1, name: 'Orc', lv: 1, hp: 250, atk: 10, agi: 5, imgSrc: 'assets/images/char4.jpg' },
+  { id: 1, name: 'Demon', lv: 1, hp: 250, atk: 10, agi: 20, imgSrc: 'assets/images/char4.jpg' },
 ];
 
 export const WEAPONS: Weapon[] = [
@@ -30,5 +30,6 @@ export const ARMORS: Armor[] = [
 ];
 
 export const CONFIG: AppUserConfig = {
-  bossSpawnRarity: 0.1
+  bossSpawnRarity: 0.1,
+  startMoney: 200,
 }

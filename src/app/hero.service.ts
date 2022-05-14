@@ -54,6 +54,10 @@ export class HeroService {
 
   upgradeHero(id: number) {
     const hero = this.sharedService.heroes.getValue().find(h => h.id === id)!;
+    if (hero.rarity >= 5) {
+      this.messageService.add(`Hero rank already maximum`);
+      return;
+    }
     const cost = hero.rarity * hero.rarity * 100;
     if (!hero.isUnlocked) {
       this.messageService.add(`Hero must be unlocked first`);

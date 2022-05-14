@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HeroService } from './hero.service';
 import { MessageService } from './message.service';
-import { ARMORS, HEROES, WEAPONS } from './mock-data';
+import { ARMORS, CONFIG, HEROES, WEAPONS } from './mock-data';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Hero } from './model/mob.model';
@@ -26,7 +26,7 @@ export class SharedService {
   }
 
   setupData():void {
-    window.localStorage.getItem('heroMoney') ? null : window.localStorage.setItem('heroMoney', JSON.stringify(100));
+    window.localStorage.getItem('heroMoney') ? null : window.localStorage.setItem('heroMoney', JSON.stringify(CONFIG.startMoney));
     window.localStorage.getItem('herosData') ? null : window.localStorage.setItem('herosData', JSON.stringify(HEROES));
     this.heroes.next(JSON.parse(window.localStorage.getItem('herosData') || '[]'));
   }
