@@ -22,6 +22,6 @@ export class DashboardComponent implements OnInit {
   }
 
   getHeroes(): void {
-    this.heroService.getHeroes().subscribe(heroes => this.heroes = heroes.filter(val => val.isUnlocked).slice(1, 5));
+    this.heroService.getHeroes().subscribe(heroes => this.heroes = heroes.filter(val => val.isUnlocked).slice(0, 5));
   }
 }

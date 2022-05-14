@@ -1,27 +1,60 @@
 <div *ngIf="hero">
   <div class="row">
-    <div class="col">
-      <h2>{{ hero.name | uppercase }} Details</h2>
-      <div><span>id: </span>{{ hero.id }}</div>
-      <div>
+    <div class="col-7">
+      <div class="card">
+        <div class="row no-gutters">
+          <div class="col-auto">
+            <img class="card-img-top" [src]="hero?.imgSrc" alt="Item image load failed"/>
+          </div>
+          <div class="col">
+            <div class="card-block">
+              <br>
+              <h4>{{ hero.name | uppercase }}</h4>
+              <div><span>Index: </span>{{ hero.id }}</div>
+              <div>Rarity rank: {{ hero.rarity}}</div>
+              <br>
+              <strong>Attribute:</strong>
+              <div>Level: {{ hero.lv}}</div>
+              <div class="row">
+                <div class="col">
+                    Hp: {{ (hero.hp * hero.lv * hero.rarity + armor?.hp!)}} <span *ngIf="armor"
+                    [ngClass]="(armor?.hp!) >= 0 ? 'text-success': 'text-danger'">
+                      ({{armor?.hp!}})</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Atk: {{ hero.atk * hero.lv * hero.rarity + weapon?.atk!}} <span *ngIf="weapon"
+                  [ngClass]="(weapon?.atk!) >= 0 ? 'text-success': 'text-danger'">
+                    ({{weapon?.atk!}})</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Agi: {{ hero.agi * hero.lv * hero.rarity + weapon?.agi! + armor?.agi!}} <span  *ngIf="armor || weapon"
+                  [ngClass]="(weapon?.agi! + armor?.agi!) >= 0 ? 'text-success': 'text-danger'"
+                  class="text-success">({{ + weapon?.agi! + armor?.agi!}})</span>
+                </div>
+                <div class="col" *ngIf="!hero.isUnlocked">
+                  <strong>Locked</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer w-100 d-flex justify-content-between">
+          <button type="button" class="btn-danger" (click)="goBack()">Back</button>
+          <button type="button" class="btn-success" *ngIf="!hero?.isUnlocked" (click)="unlock(hero)">Unlock</button>
+          <button type="button" class="btn-success" (click)="upgrade(hero)">RankUp</button>
+          <button type="button" class="btn-success" (click)="train(hero)">Train</button>
+        </div>
+      </div>
+      <!-- <div>
         <label for="hero-name">Hero name: </label>
         <input id="hero-name" [(ngModel)]="hero.name" placeholder="Hero name" />
-      </div>
-      <div>
-        <label for="hero-name">Hero rare: {{ hero.rarity }}</label>
-      </div>
-      <div>
-        <label for="hero-name">Hero price: {{ hero.price }}</label>
-      </div>
-      <div>
-        <label for="hero-name">Hero unlocked: {{ hero.isUnlocked }}</label>
-      </div>
-      <button (click)="goBack()">Back</button>
-      <button *ngIf="!hero?.isUnlocked" (click)="unlock(hero)">Unlock</button>
-      <button type="button" (click)="upgrade(hero)">Upgrade</button>
-      <button type="button" (click)="train(hero)">Train</button>
+      </div> -->
     </div>
-    <div class="col">
+    <div class="col-5">
       <h2>Equipments</h2>
       <div>
         <div class="row">

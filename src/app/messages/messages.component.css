@@ -17,3 +17,10 @@ h2 {
   color: #fff;
   background-color: #42545C;
 }
+
+.message-hub{
+  position: absolute;
+  top: 3em;
+  left: 1.5em;
+  min-width: 250px;
+}
