@@ -5,6 +5,7 @@ export interface Mob extends Item {
   hp: number;
   atk: number;
   agi: number;
+  isElite?: boolean;
 }
 
 export interface Hero extends Mob {

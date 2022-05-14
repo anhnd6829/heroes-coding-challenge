@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { BattleServiceService } from '../battle-service/battle-service.service';
 import { HeroService } from '../hero.service';
-import { CONFIG } from '../mock-data';
-import { Hero } from '../model/mob.model';
+import { MessageService } from '../message.service';
+import { CONFIG, GAME_STATE } from '../mock-data';
+import { Hero, Mob } from '../model/mob.model';
 import { SharedService } from '../shared.service';
 
 @Component({
@@ -10,12 +12,16 @@ import { SharedService } from '../shared.service';
   styleUrls: [ './dashboard.component.css' ]
 })
 export class DashboardComponent implements OnInit {
+  states = GAME_STATE;
   heroes: Hero[] = [];
   battleHero: Map<number, Hero> = new Map<number, Hero>();
-  isPlaying = false;
+  monsters: Mob[] = [];
+  gameState = GAME_STATE.prepare;
   constructor(
     private heroService: HeroService,
-    private sharedService: SharedService
+    private sharedService: SharedService,
+    private messageService: MessageService,
+    private battleService: BattleServiceService
   ) { }
 
   ngOnInit() {
@@ -34,11 +40,24 @@ export class DashboardComponent implements OnInit {
     return [...this.battleHero.values()].reverse();
   }
 
-  onPlay(): void  {
-    this.isPlaying = !this.isPlaying;
+  onDonePrepare(): void  {
+    if (this.battleHero.size <= 0) {
+      this.messageService.add('Team must have at least 1 hero');
+      return;
+    }
+    this.gameState = GAME_STATE.ready;
+    this.prepareMobs();
+  }
+
+  onStartFight(): void {
+
   }
 
   setHeroInBattle(hero: Hero):void {
+    if (this.gameState !== this.states.prepare) {
+      this.messageService.add('Now is not Prepare turn');
+      return;
+    }
     if (this.battleHero.has(hero.id)) {
       this.battleHero.delete(hero.id)
     } else {
@@ -50,5 +69,18 @@ export class DashboardComponent implements OnInit {
   }
   getRankCss(rank: number): string {
     return this.sharedService.getRankCss(rank);
+  }
+
+  prepareMobs() {
+    const teamSize = this.battleHero.size;
+    if (this.battleHero.size === 0) {
+      return;
+    }
+    const highestLevel = Math.max(...[...[...this.battleHero.values()].map(val => {return val.lv})]);
+    console.log(highestLevel);
+    this.battleService.prepareMonster(highestLevel, teamSize).then((monsters) => {
+      this.monsters = monsters;
+      console.log(this.monsters);
+    });
   }
 }

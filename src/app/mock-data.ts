@@ -32,5 +32,11 @@ export const ARMORS: Armor[] = [
 export const CONFIG: AppUserConfig = {
   teamSizeMaximun: 3,
   bossSpawnRarity: 0.1,
-  startMoney: 200,
+  startMoney: 300,
+}
+
+export enum GAME_STATE {
+  prepare = 'Prepare',
+  ready = 'Ready',
+  fight = 'Fight'
 }
