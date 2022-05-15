@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import Konva from 'konva';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AnimationService } from '../animation-service/animation.service';
 import { BattleServiceService } from '../battle-service/battle-service.service';
 import { HeroService } from '../hero.service';
 import { MessageService } from '../message.service';
@@ -24,25 +24,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
   currentMobFighting: Mob | undefined;
   currentHeroFighting: Hero | undefined;
 
-  stage: any;
-  layer = new Konva.Layer();
-
-  circle = new Konva.Circle({
-    x: 500 / 2,
-    y: 500 / 2,
-    radius: 70,
-    fill: 'red',
-    stroke: 'black',
-    strokeWidth: 4
-  });
-
   unsubcribe$ = new Subject();
 
   constructor(
     private heroService: HeroService,
     private sharedService: SharedService,
     private messageService: MessageService,
-    private battleService: BattleServiceService
+    private battleService: BattleServiceService,
+    private animationService: AnimationService
   ) {
     this.inItKonva();
   }
@@ -52,27 +41,50 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.heroService.getHeroes().subscribe(heroes => {
+      if (heroes?.length > 0) {
+        this.updateHeroValue(heroes);
+      }
+    });
     this.battleService.battleHeroToAdd.pipe(takeUntil(this.unsubcribe$)).subscribe(hero => {
       if (hero) {
         this.setHeroInBattle(hero);
       }
     })
+    this.battleService.gameStateChange.pipe(takeUntil(this.unsubcribe$)).subscribe(isChange => {
+      if (isChange) {
+        this.changeStateGame(isChange);
+      }
+    })
+  }
+
+  updateHeroValue(heroes: Hero[]) {
+    this.animationService.updateHeroValue(heroes);
   }
 
 
   inItKonva() {
-    this.stage = new Konva.Stage({
-      container: 'container-stage' || null,
-      width: 500,
-      height: 500,
-    });
-    this.layer.add(this.circle);
-    this.stage.add(this.layer);
-    this.layer.draw();
+    this.animationService.inItKonva();
+    this.animationService.addBackgroundLayer();
+    this.animationService.inItStateButton();
   }
 
   get getHeroInBattle(): Hero[] {
     return [...this.battleHero.values()].reverse();
+  }
+
+  changeStateGame(val: boolean) {
+    if (!val) {
+      return;
+    }
+    if (this.gameState === GAME_STATE.prepare) {
+      this.onDonePrepare();
+    } else if (this.gameState === GAME_STATE.ready) {
+      this.onStartFight();
+    } else {
+      this.gameState = GAME_STATE.prepare;
+    }
+    this.battleService.gameStateChange.next(false);
   }
 
   onDonePrepare(): void  {
@@ -88,15 +100,20 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.messageService.add('Fight Started');
     this.gameState = GAME_STATE.fight;
     const battleHeroIter = this.battleHero.values();
-    this.battleService.fightTurn.subscribe(turn => {
+    const unsub$ = new Subject();
+    this.battleService.fightTurn.pipe(takeUntil(unsub$)).subscribe(turn => {
       if (turn < 0) {
         this.gameState = GAME_STATE.prepare;
+        this.animationService.inItStateButton();
+        unsub$.next();
+        unsub$.complete();
       }
       this.fightTurn = turn;
       this.currentMobFighting = _.cloneDeep(this.battleService.currentMobFighting);
       this.currentHeroFighting = _.cloneDeep(this.battleService.currentHeroFighting);
     });
     this.battleService.setupFigtht(battleHeroIter);
+    this.animationService.updateStateButton(GAME_STATE.fightting);
   }
 
   setHeroInBattle(hero: Hero):void {
@@ -106,11 +123,14 @@ export class PlayerComponent implements OnInit, OnDestroy {
     }
     if (this.battleHero.has(hero.id)) {
       this.battleHero.delete(hero.id)
+      this.animationService.deleteGroup(hero.id);
+      this.animationService.updateGroupPosition([...this.battleHero.keys()]);
     } else {
       if (this.battleHero.size >= CONFIG.teamSizeMaximun) {
         return;
       }
       this.battleHero.set(hero.id, hero);
+      this.animationService.addCharacterLayer(hero.imgSrc!, [...this.battleHero.keys()].indexOf(hero.id), hero)
     }
   }
 
@@ -124,6 +144,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.battleService.prepareMonster(highestLevel, teamSize).then((monsters) => {
       this.monsters = monsters;
       this.messageService.add('Prepare turn Ended');
+      this.animationService.updateStateButton(GAME_STATE.fight);
     });
   }
 

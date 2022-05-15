@@ -10,7 +10,7 @@ import { Armor, Weapon } from './model/item.model';
 export class SharedService {
   heroes: BehaviorSubject<Hero[]> = new BehaviorSubject<Hero[]>([]);
   constructor(
-    private messageService: MessageService
+    private messageService: MessageService,
   ) { }
 
   get moneyCurrent() {
@@ -68,27 +68,26 @@ export class SharedService {
     return array;
  }
 
- getRankCss(rank: number): string {
+ getRankCss(rank: number, isGetColor?: boolean): string {
   switch(rank) {
     case 1: {
-      return 'border-success border-5 border';
+      return !!isGetColor ? '#28a745':'bg-character border-success border-5 border';
     }
     case 2: {
-      return 'border-info border-5 border';
+      return !!isGetColor ? '#17a2b8': 'bg-character border-info border-5 border';
     }
     case 3: {
-      return 'border-primary border-5 border';
+      return !!isGetColor ? '#007bff': 'bg-character border-primary border-5 border';
     }
     case 4: {
-      return 'border-warning border-5 border';
+      return !!isGetColor ? '#ffc107': 'bg-character border-warning border-5 border';
     }
     case 5: {
-      return 'border-danger border-5 border';
+      return !!isGetColor ? '#dc3545': 'bg-character border-danger border-5 border';
     }
     default: {
-      return 'border-secondary border-5 border';
+      return !!isGetColor ? '#6c757d': 'bg-character border-secondary border-5 border';
     }
-
   }
  }
 }

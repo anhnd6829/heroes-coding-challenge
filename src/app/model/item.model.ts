@@ -14,3 +14,10 @@ export interface Armor extends Item {
   hp: number;
   agi: number;
 }
+
+export interface Background{
+  shipX: number;
+  shipY: number;
+  name: string,
+  imgSrc: string;
+}

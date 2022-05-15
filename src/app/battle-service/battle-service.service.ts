@@ -11,13 +11,15 @@ import { MessageService } from '../message.service';
 @Injectable({
   providedIn: 'root'
 })
-export class BattleServiceService {
+export class BattleServiceService{
   battleHeroToAdd: BehaviorSubject<Hero | null> = new BehaviorSubject<Hero | null>(null);
+  gameStateChange: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   fightTurn: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   heroList: Hero[] = [];
   mobList: Mob[] = [];
   currentHeroFighting: Hero | undefined;
   currentMobFighting: Mob | undefined;
+  unsubcribe$ = new Subject();
   constructor(
     private shared: SharedService,
     private messageService: MessageService
@@ -25,6 +27,10 @@ export class BattleServiceService {
 
   setHeroInBattle(hero: Hero) {
     this.battleHeroToAdd.next(hero);
+  }
+
+  setGameState(value: boolean) {
+    this.gameStateChange.next(value);
   }
 
   getRandomWithMax(max: number) {
@@ -53,7 +59,7 @@ export class BattleServiceService {
     this.heroList = [...battleHeroIter];
     this.inItStatusHero();
     this.inItStatusMob();
-    const unsub = new Subject();console.log('in')
+    const unsub = new Subject();
     this.fightTurn.pipe(takeUntil(unsub)).subscribe(turn => {
       if(turn < 0) {
         unsub.next();
@@ -130,7 +136,7 @@ export class BattleServiceService {
     const damage = isCrit ? attacker.atk * CONFIG.critDamage : attacker.atk;
     defender.hp =  defender.hp - damage;
     this.messageService.add(`${isCrit ? `CRIT: ` : ``}${defender.name} take ${damage} damage!`);
-    if (defender.hp <= 0) {debugger
+    if (defender.hp <= 0) {
       this.messageService.add(`${defender.name} Dead!`);
       if (defender.price > 0) {// hero dead
         this.heroList.splice(0, 1);
