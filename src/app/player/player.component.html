@@ -1,21 +1,4 @@
-<div class="heroes-menu">
-  <div *ngFor="let hero of heroes" class="card square-20 border-0 border text-center text-primary open-pointer" (click)="setHeroInBattle(hero)">
-    <!-- <div>
-
-    </div> -->
-    <img class="card-img-top" [ngClass]="getRankCss(hero.rarity)" [src]="hero?.imgSrc" alt="Item image load failed"/>
-    <span class="text-center">{{hero.name}}</span>
-  </div>
-</div>
-
-<!-- <div id="container-1" class="container">
-  <ng-container id="container-1" class="container">
-
-  </ng-container>
-
-</div> -->
-<!-- <div id="container-stage"></div> -->
-<!-- <h2 class="text-center">{{gameState}} Stage<span *ngIf="fightTurn > 0"> - Turn: {{fightTurn}}</span></h2>
+<h2 class="text-center">{{gameState}} Stage<span *ngIf="fightTurn > 0"> - Turn: {{fightTurn}}</span></h2>
 <div class="text-center">
   <button type="button" class="btn btn-primary" *ngIf="gameState === states.prepare" (click)="onDonePrepare()">End Prepare turn</button>
   <button type="button" class="btn btn-primary" *ngIf="gameState === states.ready" (click)="onStartFight()">Fight</button>
@@ -44,11 +27,10 @@
         <div class="card open-pointer border-0 border" *ngIf="monsters.length > 0">
           <img class="card-img-top" [ngClass]="getRankCss(monsters[0].isElite ? 5 : 1)" [src]="monsters[0].imgSrc"
             alt="Item image load failed" />
-          <span class="text-center">{{'Lv' + monsters[0].lv + ' ' + monsters[0].name}}</span>
+          <span class="text-center">{{'Lv' + monsters[0].lv + ' ' + monsters[0].name + (monsters[0].isElite ? ' Elite Boss' : '')}}</span>
           <span class="text-center text-danger" *ngIf="gameState === states.fight">{{'HP: ' + currentMobFighting?.hp}}</span>
         </div>
       </div>
     </div>
   </div>
-</div> -->
-
+</div>

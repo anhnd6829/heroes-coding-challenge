@@ -12,6 +12,7 @@ import { MessageService } from '../message.service';
   providedIn: 'root'
 })
 export class BattleServiceService {
+  battleHeroToAdd: BehaviorSubject<Hero | null> = new BehaviorSubject<Hero | null>(null);
   fightTurn: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   heroList: Hero[] = [];
   mobList: Mob[] = [];
@@ -21,6 +22,10 @@ export class BattleServiceService {
     private shared: SharedService,
     private messageService: MessageService
   ) { }
+
+  setHeroInBattle(hero: Hero) {
+    this.battleHeroToAdd.next(hero);
+  }
 
   getRandomWithMax(max: number) {
     const result = Math.floor(Math.random() * (max + 1));
