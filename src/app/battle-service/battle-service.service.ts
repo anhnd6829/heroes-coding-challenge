@@ -55,19 +55,11 @@ export class BattleServiceService{
     return this.spawnMonster(highestLevel, mobsSize);
   }
 
-  setupFigtht(battleHeroIter: IterableIterator<Hero>) {
+  setupFight(battleHeroIter: IterableIterator<Hero>) {
     this.heroList = [...battleHeroIter];
     this.inItStatusHero();
     this.inItStatusMob();
     const unsub = new Subject();
-    this.fightTurn.pipe(takeUntil(unsub)).subscribe(turn => {
-      if(turn < 0) {
-        unsub.next();
-        unsub.complete()
-      } else if (turn > 0) {
-        this.startFight();
-      }
-    })
     this.fightTurn.next(1);
   }
   // final result = (base value * lv * rarity) + weared item
@@ -98,7 +90,7 @@ export class BattleServiceService{
     }
   }
 
-  startFight() {
+  startFight() {debugger
     if (this.currentMobFighting?.agi! < this.currentHeroFighting?.agi!) {
       this.attack(this.currentHeroFighting!, this.currentMobFighting! as Hero);
     } else {
@@ -141,7 +133,7 @@ export class BattleServiceService{
       if (defender.price > 0) {// hero dead
         this.heroList.splice(0, 1);
         if (this.heroList.length <= 0) {
-          this.currentHeroFighting = _.cloneDeep(this.heroList[0]);
+          this.currentHeroFighting = undefined;
           this.messageService.add(`This round Lose at turn ${this.fightTurn.getValue()}!`);
           this.fightTurn.next(-1);
           return;
@@ -152,7 +144,7 @@ export class BattleServiceService{
         this.shared.updateUserMoney(defender.lv * 10); // plus money to account = lv * 10
         this.mobList.splice(0, 1);
         if (this.mobList.length <= 0) {
-          this.currentMobFighting = _.cloneDeep(this.mobList[0]);
+          this.currentMobFighting = undefined;
           this.messageService.add(`This round finished at turn ${this.fightTurn.getValue()}!`);
           this.fightTurn.next(-1);
           return;

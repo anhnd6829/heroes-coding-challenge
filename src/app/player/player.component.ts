@@ -94,25 +94,29 @@ export class PlayerComponent implements OnInit, OnDestroy {
     }
     this.gameState = GAME_STATE.ready;
     this.prepareMobs();
+    this.battleService.fightTurn.next(0);
   }
 
   onStartFight(): void {
-    this.messageService.add('Fight Started');
+    this.messageService.add('Fight Started'); debugger
     this.gameState = GAME_STATE.fight;
     const battleHeroIter = this.battleHero.values();
     const unsub$ = new Subject();
-    this.battleService.fightTurn.pipe(takeUntil(unsub$)).subscribe(turn => {
-      if (turn < 0) {
+    this.battleService.fightTurn.pipe(takeUntil(unsub$)).subscribe(turn => { debugger
+      if (turn < 0) {debugger
         this.gameState = GAME_STATE.prepare;
         this.animationService.inItStateButton();
         unsub$.next();
         unsub$.complete();
+      } else if (turn > 0) {
+        this.battleService.startFight();
       }
+      this.animationService.updateStateText( this.gameState);
       this.fightTurn = turn;
       this.currentMobFighting = _.cloneDeep(this.battleService.currentMobFighting);
       this.currentHeroFighting = _.cloneDeep(this.battleService.currentHeroFighting);
     });
-    this.battleService.setupFigtht(battleHeroIter);
+    this.battleService.setupFight(battleHeroIter);
     this.animationService.updateStateButton(GAME_STATE.fightting);
   }
 

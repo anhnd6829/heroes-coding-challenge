@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import Konva from 'konva';
 import * as _ from 'lodash';
+import { BehaviorSubject } from 'rxjs';
 import { BattleServiceService } from '../battle-service/battle-service.service';
 import { BACKGROUND, GAME_STATE, SHIP } from '../mock-data';
 import { Background } from '../model/item.model';
@@ -16,10 +17,12 @@ export class AnimationService {
   layer = new Konva.Layer();
   groupRecord: Record<number, Konva.Group> = {};
   buttonStageGroup = new Konva.Group();
+  currentStateText = new Konva.Text({});
+  currentState = new BehaviorSubject<string>('');
   constructor(
     private sharedService: SharedService,
     private battleService: BattleServiceService
-  ) { }
+  ) {}
 
   inItKonva() {
     this.stage = new Konva.Stage({
@@ -27,10 +30,29 @@ export class AnimationService {
       width: 1200,
       height: 600,
     });
-
+  }
+  updateStateText(text: string) {
+    let message = '';
+    message = 'Stage: ' + (text === GAME_STATE.fight ? GAME_STATE.fightting : text)
+    + ' - Turn: '+ this.battleService.fightTurn.getValue() + ' Enemy Remain: ' + this.battleService.mobList.length;
+    this.currentStateText.destroy();
+    this.currentStateText = new Konva.Text({
+      name: 'state-info',
+      x: 900,
+      y: 100,
+      width: 200,
+      text: message,
+      fontSize: 20,
+      fontFamily: 'Calibri',
+      fill: 'red',
+      align: 'center',
+    });
+    this.layer.add(this.currentStateText);
   }
 
   inItStateButton() {
+    this.currentState.next(GAME_STATE.prepare);
+    this.buttonStageGroup.destroy();
     const group = new Konva.Group({
       x: 520,
       y: 300,
@@ -89,8 +111,11 @@ export class AnimationService {
   }
   updateStateButton(text?: string) {
     if(text === GAME_STATE.fightting) {
+      this.currentState.next(GAME_STATE.fightting);
       this.buttonStageGroup.destroy();
       return;
+    } else if (text === GAME_STATE.fight) {
+      this.currentState.next(GAME_STATE.ready);
     }
     this.buttonStageGroup.getChildren((c) => c.name() === 'info')[0].destroy();
     const buttonInfo = new Konva.Text({
