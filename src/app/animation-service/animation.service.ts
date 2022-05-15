@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import Konva from 'konva';
+import { Group } from 'konva/lib/Group';
+import { Shape } from 'konva/lib/Shape';
 import * as _ from 'lodash';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { BattleServiceService } from '../battle-service/battle-service.service';
 import { BACKGROUND, GAME_STATE, SHIP } from '../mock-data';
 import { Background } from '../model/item.model';
-import { Hero } from '../model/mob.model';
-import { SharedService } from '../shared.service';
+import { Hero, Mob } from '../model/mob.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,11 @@ export class AnimationService {
   layer = new Konva.Layer();
   groupRecord: Record<number, Konva.Group> = {};
   buttonStageGroup = new Konva.Group();
+  monsterGroup = new Konva.Group();
   currentStateText = new Konva.Text({});
   currentState = new BehaviorSubject<string>('');
+  animation = new Konva.Animation(() => {});
   constructor(
-    private sharedService: SharedService,
     private battleService: BattleServiceService
   ) {}
 
@@ -40,7 +42,7 @@ export class AnimationService {
       name: 'state-info',
       x: 900,
       y: 100,
-      width: 200,
+      width: 220,
       text: message,
       fontSize: 20,
       fontFamily: 'Calibri',
@@ -138,13 +140,20 @@ export class AnimationService {
     }
     Object.keys(this.groupRecord).forEach(g => {
       const char = heroes.find((h) => h.id.toString() === g)!;
+      const isDead = this.battleService.heroListDead.getValue().some(h => h.id === char.id);
+      if (isDead) {
+        this.groupRecord[+g].destroy();
+        delete this.groupRecord[+g];
+        this.battleService.battleHeroToAdd.next(char);
+        return;
+      }
       this.groupRecord[+g].getChildren((c) => c.name() === 'info')[0].destroy();
       const info = new Konva.Text({
         name: 'info',
         x: 0,
         y: 160,
         width: 160,
-        text: 'Lv' + char.lv + ' ' + char.name,
+        text: isDead ? char.name + ' \nDead' : 'Lv' + char.lv + ' ' + char.name,
         fontSize: 15,
         fontFamily: 'Calibri',
         fill: 'red',
@@ -152,6 +161,151 @@ export class AnimationService {
       });
       this.groupRecord[+g].add(info);
     })
+  }
+
+  updateFightingHpHero() {
+    const hero = this.battleService.currentHeroFighting;
+    if (!hero?.id) {
+      return;
+    }
+    this.groupRecord[hero.id].getChildren((c) => c.name() === 'info')[0].destroy();
+    this.groupRecord[hero.id].getChildren((c) => c.name() === 'card-info')[0].destroy();
+    const info = new Konva.Text({
+      name: 'info',
+      x: 0,
+      y: 160,
+      width: 160,
+      text: 'Lv' + hero.lv + ' ' + hero.name + ` \nHp: ${hero.hp}`,
+      fontSize: 15,
+      fontFamily: 'Calibri',
+      fill: 'red',
+      align: 'center',
+    });
+    const rect = new Konva.Rect({
+      name: 'card-info',
+      x: 0,
+      y: 160 - info.height() * 0.25,
+      stroke: '#555',
+      strokeWidth: 5,
+      fill: '#ddd',
+      width: 160,
+      height: info.height() * 1.5,
+      shadowColor: 'black',
+      shadowBlur: 10,
+      shadowOffsetX: 10,
+      shadowOffsetY: 10,
+      shadowOpacity: 0.2,
+      cornerRadius: 6,
+    });
+    this.groupRecord[hero.id].add(rect);
+    this.groupRecord[hero.id].add(info);
+  }
+
+  updateFightingHpMob() {
+    const mob = this.battleService.currentMobFighting;
+    if (!mob) {
+      return;
+    }
+    // this.monsterGroup.getChildren((c) => c.name() === mob.identity?.toString())[0].destroy();
+    this.monsterGroup.getChildren((c) => c.name() === 'info')[0].destroy();
+    this.monsterGroup.getChildren((c) => c.name() === 'card-info')[0].destroy();
+    // const image = new Image();
+    // // ship Image:
+    // image.src = mob.imgSrc!;
+    // const charLayer = new Konva.Image({
+    //   // stroke: this.getRankCss(rarity, true),
+    //   // strokeWidth: 10,
+    //   name: mob.identity?.toString(),
+    //   x: 0,
+    //   y: 0,
+    //   image: image,
+    //   width: 160,
+    //   height: 160,
+    // });
+    const info = new Konva.Text({
+      name: 'info',
+      x: 0,
+      y: 160,
+      width: 160,
+      text: 'Lv' + mob.lv + ' ' + mob.name + (mob.isElite ? ' Boss'  : '') + ' - HP: ' + mob.hp,
+      fontSize: 15,
+      fontFamily: 'Calibri',
+      fill: 'red',
+      align: 'center',
+    });
+    const rect = new Konva.Rect({
+      name: 'card-info',
+      x: 0,
+      y: 160 - info.height() * 0.25,
+      stroke: '#555',
+      strokeWidth: 5,
+      fill: '#ddd',
+      width: 160,
+      height: info.height() * 1.5,
+      shadowColor: 'black',
+      shadowBlur: 10,
+      shadowOffsetX: 10,
+      shadowOffsetY: 10,
+      shadowOpacity: 0.2,
+      cornerRadius: 6,
+    });
+    // this.monsterGroup.add(charLayer);
+    this.monsterGroup.add(rect);
+    this.monsterGroup.add(info);
+  }
+
+  addMonsterLayout(imageSrc: string, mob: Mob) {
+    const group = new Konva.Group({
+      name: mob.identity?.toString(),
+      x: 1200,
+      y: 500,
+    });
+    this.monsterGroup = group;
+    const image = new Image();
+    // ship Image:
+    image.src = imageSrc;
+    const charLayer = new Konva.Image({
+      // stroke: this.getRankCss(rarity, true),
+      // strokeWidth: 10,
+      name: mob.identity?.toString(),
+      x: 0,
+      y: 0,
+      image: image,
+      width: 160,
+      height: 160,
+    });
+    const info = new Konva.Text({
+      name: 'info',
+      x: 0,
+      y: 160,
+      width: 160,
+      text: 'Lv' + mob.lv + ' ' + mob.name + (mob.isElite ? ' Boss'  : '') + ' - HP: ' + mob.hp,
+      fontSize: 15,
+      fontFamily: 'Calibri',
+      fill: 'red',
+      align: 'center',
+    });
+    const rect = new Konva.Rect({
+      name: 'card-info',
+      x: 0,
+      y: 160,
+      stroke: '#555',
+      strokeWidth: 5,
+      fill: '#ddd',
+      width: 160,
+      height: info.height() * 1.5,
+      shadowColor: 'black',
+      shadowBlur: 10,
+      shadowOffsetX: 10,
+      shadowOffsetY: 10,
+      shadowOpacity: 0.2,
+      cornerRadius: 6,
+    });
+    group.add(charLayer);
+    group.add(rect);
+    group.add(info);
+    this.layer.add(group);
+    this.stage.add(this.layer);
   }
 
   addBackgroundLayer() {
@@ -218,6 +372,7 @@ export class AnimationService {
       align: 'center',
     });
     const rect = new Konva.Rect({
+      name: 'card-info',
       x: 0,
       y: 160 - info.height() * 0.25,
       stroke: '#555',
@@ -236,7 +391,9 @@ export class AnimationService {
     group.add(rect);
     group.add(info);
     group.on('click', () => {
-      this.battleService.battleHeroToAdd.next(char);
+      if (this.currentState.getValue() === GAME_STATE.prepare) {
+        this.battleService.battleHeroToAdd.next(char);
+      }
       stage.container().style.cursor = 'default';
     });
     const stage = this.stage;
@@ -257,9 +414,47 @@ export class AnimationService {
 
   updateGroupPosition(indexList: number[]) {
     indexList.map((g, index) => {
+      if (!this.groupRecord[g]?.x()) {
+        return;
+      }
       this.groupRecord[g].x(this.currentBackground?.shipX! + (2 - index )* 200);
       this.groupRecord[g].y(this.currentBackground?.shipY! + (index - 3)* 30);
     })
+  }
+
+  async initCurrentFightHeroAnimation(hero: Hero, callback?: () => void) {
+    await this.createAnimation(this.groupRecord[hero?.id], 150, 360, 1.5, callback );
+  }
+
+  async initCurrentFightMonsterAnimation(mob: Mob, callback?: () => void) {
+    this.addMonsterLayout(mob?.imgSrc!, mob)
+    await this.createAnimation(this.monsterGroup, 700, 280, 1.5, callback );
+  }
+
+  async createAnimation(group: Group | Shape, targetX: number, targetY: number, seccond: number, callback?: () => void) {
+    if (!group?.x()) {
+        return;
+    }
+      let sx = Math.abs(targetX-group.x());
+      const vx = (targetX-group.x())/seccond;
+      const vy = (targetY-group.y())/seccond;
+      this.animation = new Konva.Animation((frame) => {
+        if (frame) {
+          // |targetX - x|/t=v2; |targetY-y|/t = v1
+          const x = vx * (frame.timeDiff / 1000);
+          const y = vy * (frame.timeDiff / 1000);
+          group.move({x, y});
+          sx = sx + x;
+          if (sx <= 0) {
+            this.animation.stop();
+            group.x(targetX);
+            group.y(targetY);
+            // this.updateFightingHpHero();
+            callback?.();
+          }
+        }
+        }, this.layer);
+      this.animation.start();
   }
   // getRankCss(rank: number, isGetColor?: boolean): string {
   //   return this.sharedService.getRankCss(rank, isGetColor);

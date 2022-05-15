@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { Hero } from './model/mob.model';
 import { Armor, Weapon } from './model/item.model';
+import { AnimationService } from './animation-service/animation.service';
 @Injectable({ providedIn: 'root' })
 export class SharedService {
   heroes: BehaviorSubject<Hero[]> = new BehaviorSubject<Hero[]>([]);

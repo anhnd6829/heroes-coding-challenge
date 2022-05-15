@@ -15,6 +15,8 @@ export class BattleServiceService{
   battleHeroToAdd: BehaviorSubject<Hero | null> = new BehaviorSubject<Hero | null>(null);
   gameStateChange: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   fightTurn: BehaviorSubject<number> = new BehaviorSubject<number>(0);
+  heroListDead: BehaviorSubject<Hero[]> = new BehaviorSubject<Hero[]>([]);
+  mobDead: BehaviorSubject<Mob | undefined> = new BehaviorSubject<Mob | undefined>(undefined);
   heroList: Hero[] = [];
   mobList: Mob[] = [];
   currentHeroFighting: Hero | undefined;
@@ -22,7 +24,7 @@ export class BattleServiceService{
   unsubcribe$ = new Subject();
   constructor(
     private shared: SharedService,
-    private messageService: MessageService
+    private messageService: MessageService,
   ) { }
 
   setHeroInBattle(hero: Hero) {
@@ -45,6 +47,7 @@ export class BattleServiceService{
     const mobCreate = _.sample(MOBS)!;
     mobCreate.lv = this.getRandomWithMax(highestLevel + 1); // mob lv can > than highest lv of hero by 1
     mobCreate.isElite = this.shared.getRollDice(CONFIG.bossSpawnRarity)
+    mobCreate.identity =  this.mobList.length;
     this.mobList.push(mobCreate);
     return this.spawnMonster(highestLevel, mobsSize);
   }
@@ -57,10 +60,6 @@ export class BattleServiceService{
 
   setupFight(battleHeroIter: IterableIterator<Hero>) {
     this.heroList = [...battleHeroIter];
-    this.inItStatusHero();
-    this.inItStatusMob();
-    const unsub = new Subject();
-    this.fightTurn.next(1);
   }
   // final result = (base value * lv * rarity) + weared item
   inItStatusHero() {
@@ -76,6 +75,7 @@ export class BattleServiceService{
     + (weaponWeared ?  weaponWeared.atk : 0);
     this.currentHeroFighting.agi = this.currentHeroFighting.agi * this.currentHeroFighting.lv * this.currentHeroFighting.rarity
     + (weaponWeared ?  weaponWeared.agi : 0)  + (armorWeared ? armorWeared.agi : 0);
+    // this.shared.initCurrentFightHeroAnimation(this.currentHeroFighting);
   }
   // final result = (base value * lv); if is Elite then * 5 more
   inItStatusMob() {
@@ -90,7 +90,7 @@ export class BattleServiceService{
     }
   }
 
-  startFight() {debugger
+  startFight() {
     if (this.currentMobFighting?.agi! < this.currentHeroFighting?.agi!) {
       this.attack(this.currentHeroFighting!, this.currentMobFighting! as Hero);
     } else {
@@ -131,28 +131,33 @@ export class BattleServiceService{
     if (defender.hp <= 0) {
       this.messageService.add(`${defender.name} Dead!`);
       if (defender.price > 0) {// hero dead
+        const list = this.heroListDead.getValue();
+        list.push(this.heroList[0]);
         this.heroList.splice(0, 1);
         if (this.heroList.length <= 0) {
+          this.heroListDead.next(list);
           this.currentHeroFighting = undefined;
           this.messageService.add(`This round Lose at turn ${this.fightTurn.getValue()}!`);
           this.fightTurn.next(-1);
           return;
         }
         this.inItStatusHero();
+        this.heroListDead.next(list);
         this.fightTurn.next(this.fightTurn.getValue() + 1);
       } else {// monster dead
         this.shared.updateUserMoney(defender.lv * 10); // plus money to account = lv * 10
         this.mobList.splice(0, 1);
         if (this.mobList.length <= 0) {
+          this.mobDead.next(this.currentMobFighting);
           this.currentMobFighting = undefined;
           this.messageService.add(`This round finished at turn ${this.fightTurn.getValue()}!`);
           this.fightTurn.next(-1);
           return;
         }
         this.inItStatusMob();
+        this.mobDead.next(this.currentMobFighting);
         this.fightTurn.next(this.fightTurn.getValue() + 1);
       }
-
     }
   }
 }

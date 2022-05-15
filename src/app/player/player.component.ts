@@ -17,6 +17,7 @@ import { SharedService } from '../shared.service';
 })
 export class PlayerComponent implements OnInit, OnDestroy {
   states = GAME_STATE;
+  currentHeroes: Hero[] = [];
   battleHero: Map<number, Hero> = new Map<number, Hero>();
   monsters: Mob[] = [];
   gameState = GAME_STATE.prepare;
@@ -44,8 +45,24 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.heroService.getHeroes().subscribe(heroes => {
       if (heroes?.length > 0) {
         this.updateHeroValue(heroes);
+        this.currentHeroes = heroes;
       }
     });
+    this.battleService.heroListDead.pipe(takeUntil(this.unsubcribe$)).subscribe(heroes => {
+      if (heroes) {
+        this.updateHeroValue(this.currentHeroes);
+        this.animationService.initCurrentFightHeroAnimation(this.battleService.currentHeroFighting!, () => {
+          this.animationService.updateGroupPosition([...this.battleHero.keys()].filter(val => val !== (this.battleService.currentHeroFighting?.id)));
+        });
+      }
+    })
+    this.battleService.mobDead.pipe(takeUntil(this.unsubcribe$)).subscribe(mob => {
+      if (mob) {
+        // this.animationService.initCurrentFightMonsterAnimation(this.battleService.currentMobFighting!, () => {
+        // });
+        this.animationService.monsterGroup.removeName(mob.identity?.toString());
+      }
+    })
     this.battleService.battleHeroToAdd.pipe(takeUntil(this.unsubcribe$)).subscribe(hero => {
       if (hero) {
         this.setHeroInBattle(hero);
@@ -97,13 +114,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.battleService.fightTurn.next(0);
   }
 
-  onStartFight(): void {
-    this.messageService.add('Fight Started'); debugger
+  async onStartFight(): Promise<void> {
+    this.messageService.add('Fight Started');
     this.gameState = GAME_STATE.fight;
     const battleHeroIter = this.battleHero.values();
     const unsub$ = new Subject();
-    this.battleService.fightTurn.pipe(takeUntil(unsub$)).subscribe(turn => { debugger
-      if (turn < 0) {debugger
+    this.battleService.fightTurn.pipe(takeUntil(unsub$)).subscribe(turn => {
+      if (turn < 0) {
         this.gameState = GAME_STATE.prepare;
         this.animationService.inItStateButton();
         unsub$.next();
@@ -112,12 +129,22 @@ export class PlayerComponent implements OnInit, OnDestroy {
         this.battleService.startFight();
       }
       this.animationService.updateStateText( this.gameState);
+      this.animationService.updateFightingHpHero();
+      this.animationService.updateFightingHpMob();
       this.fightTurn = turn;
       this.currentMobFighting = _.cloneDeep(this.battleService.currentMobFighting);
       this.currentHeroFighting = _.cloneDeep(this.battleService.currentHeroFighting);
     });
     this.battleService.setupFight(battleHeroIter);
-    this.animationService.updateStateButton(GAME_STATE.fightting);
+    this.battleService.inItStatusHero();
+    await this.animationService.initCurrentFightHeroAnimation(this.battleService.currentHeroFighting!, async () => {
+      this.animationService.updateGroupPosition([...this.battleHero.keys()].filter(val => val !== (this.battleService.currentHeroFighting?.id)));
+      this.battleService.inItStatusMob();
+      await this.animationService.initCurrentFightMonsterAnimation(this.battleService.currentMobFighting!, () => {
+        this.battleService.fightTurn.next(1);
+        this.animationService.updateStateButton(GAME_STATE.fightting);
+      });
+    });
   }
 
   setHeroInBattle(hero: Hero):void {
