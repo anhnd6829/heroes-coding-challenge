@@ -12,7 +12,7 @@ import { AnimationService } from '../animation-service/animation.service';
 @Injectable({
   providedIn: 'root'
 })
-export class BattleServiceService{
+export class BattleService{
   battleHeroToAdd: BehaviorSubject<Hero | null> = new BehaviorSubject<Hero | null>(null);
   gameStateChange: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   fightTurn: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -127,6 +127,7 @@ export class BattleServiceService{
     this.attack(defender, attacker, true);
   }
 
+  // TODO: create animation then replace this at animation service
   attackAnimation(attackTime: number) {
     return new Promise( resolve => setTimeout(resolve, attackTime) );
   }

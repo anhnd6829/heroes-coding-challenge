@@ -4,7 +4,7 @@ import { Group } from 'konva/lib/Group';
 import { Shape } from 'konva/lib/Shape';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { BattleServiceService } from '../battle-service/battle-service.service';
+import { BattleService } from '../battle-service/battle.service';
 import { BACKGROUND, GAME_STATE, SHIP } from '../mock-data';
 import { Background } from '../model/item.model';
 import { Hero, Mob } from '../model/mob.model';
@@ -24,7 +24,7 @@ export class AnimationService {
   currentState = new BehaviorSubject<string>('');
   animation = new Konva.Animation(() => {});
   constructor(
-    private battleService: BattleServiceService,
+    private battleService: BattleService,
     private sharedService: SharedService
   ) {}
 

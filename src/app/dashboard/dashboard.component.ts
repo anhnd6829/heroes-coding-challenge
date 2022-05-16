@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import Konva from 'konva';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-import { BattleServiceService } from '../battle-service/battle-service.service';
+import { BattleService } from '../battle-service/battle.service';
 import { HeroService } from '../hero.service';
 import { MessageService } from '../message.service';
 import { CONFIG, GAME_STATE } from '../mock-data';
@@ -20,7 +20,7 @@ export class DashboardComponent implements OnInit {
     private heroService: HeroService,
     private sharedService: SharedService,
     private messageService: MessageService,
-    private battleService: BattleServiceService
+    private battleService: BattleService
   ) {}
 
   ngOnInit() {

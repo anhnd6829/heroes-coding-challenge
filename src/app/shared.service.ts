@@ -38,6 +38,9 @@ export class SharedService {
   }
 
   updateReplaceMoneyData(money: number): void {
+    if ( money <= 0) {
+      money = 0;
+    }
     window.localStorage.setItem('heroMoney', JSON.stringify(money));
   }
 

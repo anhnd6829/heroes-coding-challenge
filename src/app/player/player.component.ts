@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AnimationService } from '../animation-service/animation.service';
-import { BattleServiceService } from '../battle-service/battle-service.service';
+import { BattleService } from '../battle-service/battle.service';
 import { HeroService } from '../hero.service';
 import { MessageService } from '../message.service';
 import { CONFIG, GAME_STATE } from '../mock-data';
@@ -31,7 +31,7 @@ export class PlayerComponent implements OnInit, OnDestroy, AfterViewInit {
     private heroService: HeroService,
     private sharedService: SharedService,
     private messageService: MessageService,
-    private battleService: BattleServiceService,
+    private battleService: BattleService,
     private animationService: AnimationService
   ) {
   }
