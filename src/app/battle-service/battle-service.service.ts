@@ -24,14 +24,14 @@ export class BattleServiceService{
   currentMobFighting: Mob | undefined;
   unsubcribe$ = new Subject();
 
-  animation?: AnimationService;
+  // animation?: AnimationService;
   constructor(
     private shared: SharedService,
     // private animation: AnimationService,
     private messageService: MessageService,
-    injector: Injector,
+    // injector: Injector,
   ) {
-    setTimeout(() => this.animation = injector.get(AnimationService))
+    // setTimeout(() => this.animation = injector.get(AnimationService))
    }
 
   setHeroInBattle(hero: Hero) {
@@ -60,7 +60,7 @@ export class BattleServiceService{
   }
 
   prepareMonster(highestLevel: number, teamSize: number): Promise<Mob[]>  {
-    this.mobList.pop();
+    this.mobList = [];
     const mobsSize = this.getRandomWithMax(teamSize * 2); // mobsSize of turn = random from 0 to teamSize * 2
     return this.spawnMonster(highestLevel, mobsSize);
   }
@@ -145,7 +145,6 @@ export class BattleServiceService{
           this.heroListDead.next(list);
           this.currentHeroFighting = undefined;
           this.messageService.add(`This round Lose at turn ${this.fightTurn.getValue()}!`);
-          this.animation?.monsterGroup.destroy();
           this.fightTurn.next(-1);
           return;
         }
@@ -159,7 +158,6 @@ export class BattleServiceService{
           this.mobDead.next(this.currentMobFighting);
           this.currentMobFighting = undefined;
           this.messageService.add(`This round finished at turn ${this.fightTurn.getValue()}!`);
-          this.animation?.monsterGroup.destroy();
           this.fightTurn.next(-1);
           return;
         }

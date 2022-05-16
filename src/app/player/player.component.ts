@@ -58,9 +58,12 @@ export class PlayerComponent implements OnInit, OnDestroy {
     })
     this.battleService.mobDead.pipe(takeUntil(this.unsubcribe$)).subscribe(mob => {
       if (mob) {
-        // this.animationService.initCurrentFightMonsterAnimation(this.battleService.currentMobFighting!, () => {
-        // });
-        this.animationService.monsterGroup.removeName(mob.identity?.toString());
+        this.animationService.monsterGroup.destroy();
+        if (this.battleService.mobList.length <= 0) {
+          return;
+        }
+        this.animationService.initCurrentFightMonsterAnimation(this.battleService.currentMobFighting!, () => {
+        });
       }
     })
     this.battleService.battleHeroToAdd.pipe(takeUntil(this.unsubcribe$)).subscribe(hero => {
@@ -115,6 +118,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   }
 
   async onStartFight(): Promise<void> {
+    this.animationService.monsterGroup.destroy();
     this.messageService.add('Fight Started');
     this.gameState = GAME_STATE.fight;
     const battleHeroIter = this.battleHero.values();
@@ -123,6 +127,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       if (turn < 0) {
         this.gameState = GAME_STATE.prepare;
         this.animationService.inItStateButton();
+        // this.animationService.monsterGroup.destroy();
+        this.battleService.heroListDead.next([]);
         unsub$.next();
         unsub$.complete();
       } else if (turn > 0) {

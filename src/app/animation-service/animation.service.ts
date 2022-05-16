@@ -203,25 +203,24 @@ export class AnimationService {
 
   updateFightingHpMob() {
     const mob = this.battleService.currentMobFighting;
-    if (!mob) {
+    if (_.isNil(mob) || _.isNil(this.monsterGroup)) {
       return;
     }
-    // this.monsterGroup.getChildren((c) => c.name() === mob.identity?.toString())[0].destroy();
-    this.monsterGroup.getChildren((c) => c.name() === 'info')[0].destroy();
-    this.monsterGroup.getChildren((c) => c.name() === 'card-info')[0].destroy();
-    // const image = new Image();
-    // // ship Image:
-    // image.src = mob.imgSrc!;
-    // const charLayer = new Konva.Image({
-    //   // stroke: this.getRankCss(rarity, true),
-    //   // strokeWidth: 10,
-    //   name: mob.identity?.toString(),
-    //   x: 0,
-    //   y: 0,
-    //   image: image,
-    //   width: 160,
-    //   height: 160,
-    // });
+    this.monsterGroup.getChildren((c) => c.name() === 'img')[0]?.destroy();
+    this.monsterGroup.getChildren((c) => c.name() === 'info')[0]?.destroy();
+    this.monsterGroup.getChildren((c) => c.name() === 'card-info')[0]?.destroy();
+    const image = new Image();
+    image.src = mob.imgSrc!;
+    const charLayer = new Konva.Image({
+      // stroke: this.getRankCss(rarity, true),
+      // strokeWidth: 10,
+      name: 'img',
+      x: 0,
+      y: 0,
+      image: image,
+      width: 160,
+      height: 160,
+    });
     const info = new Konva.Text({
       name: 'info',
       x: 0,
@@ -249,7 +248,7 @@ export class AnimationService {
       shadowOpacity: 0.2,
       cornerRadius: 6,
     });
-    // this.monsterGroup.add(charLayer);
+    this.monsterGroup.add(charLayer);
     this.monsterGroup.add(rect);
     this.monsterGroup.add(info);
   }
@@ -262,12 +261,12 @@ export class AnimationService {
     });
     this.monsterGroup = group;
     const image = new Image();
-    // ship Image:
+    // Image:
     image.src = imageSrc;
     const charLayer = new Konva.Image({
       // stroke: this.getRankCss(rarity, true),
       // strokeWidth: 10,
-      name: mob.identity?.toString(),
+      name:'img',
       x: 0,
       y: 0,
       image: image,
