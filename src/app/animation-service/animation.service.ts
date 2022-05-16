@@ -8,6 +8,7 @@ import { BattleServiceService } from '../battle-service/battle-service.service';
 import { BACKGROUND, GAME_STATE, SHIP } from '../mock-data';
 import { Background } from '../model/item.model';
 import { Hero, Mob } from '../model/mob.model';
+import { SharedService } from '../shared.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class AnimationService {
   currentState = new BehaviorSubject<string>('');
   animation = new Konva.Animation(() => {});
   constructor(
-    private battleService: BattleServiceService
+    private battleService: BattleServiceService,
+    private sharedService: SharedService
   ) {}
 
   inItKonva() {
@@ -185,7 +187,7 @@ export class AnimationService {
       name: 'card-info',
       x: 0,
       y: 160 - info.height() * 0.25,
-      stroke: '#555',
+      stroke: this.getRankCss(hero.rarity, true),
       strokeWidth: 5,
       fill: '#ddd',
       width: 160,
@@ -236,7 +238,7 @@ export class AnimationService {
       name: 'card-info',
       x: 0,
       y: 160 - info.height() * 0.25,
-      stroke: '#555',
+      stroke: mob.isElite ? this.getRankCss(5, true) : '#555',
       strokeWidth: 5,
       fill: '#ddd',
       width: 160,
@@ -288,7 +290,7 @@ export class AnimationService {
       name: 'card-info',
       x: 0,
       y: 160,
-      stroke: '#555',
+      stroke: mob.isElite ? this.getRankCss(5, true) : '#555',
       strokeWidth: 5,
       fill: '#ddd',
       width: 160,
@@ -374,7 +376,7 @@ export class AnimationService {
       name: 'card-info',
       x: 0,
       y: 160 - info.height() * 0.25,
-      stroke: '#555',
+      stroke: this.getRankCss(char.rarity, true),
       strokeWidth: 5,
       fill: '#ddd',
       width: 160,
@@ -455,7 +457,7 @@ export class AnimationService {
         }, this.layer);
       this.animation.start();
   }
-  // getRankCss(rank: number, isGetColor?: boolean): string {
-  //   return this.sharedService.getRankCss(rank, isGetColor);
-  // }
+  getRankCss(rank: number, isGetColor?: boolean): string {
+    return this.sharedService.getRankCss(rank, isGetColor);
+  }
 }

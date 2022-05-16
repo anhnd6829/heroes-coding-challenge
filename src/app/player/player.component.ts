@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import { SharedService } from '../shared.service';
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.css']
 })
-export class PlayerComponent implements OnInit, OnDestroy {
+export class PlayerComponent implements OnInit, OnDestroy, AfterViewInit {
   states = GAME_STATE;
   currentHeroes: Hero[] = [];
   battleHero: Map<number, Hero> = new Map<number, Hero>();
@@ -34,6 +34,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     private battleService: BattleServiceService,
     private animationService: AnimationService
   ) {
+  }
+  ngAfterViewInit(): void {
     this.inItKonva();
   }
   ngOnDestroy(): void {
@@ -88,6 +90,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.animationService.addBackgroundLayer();
     this.animationService.inItStateButton();
   }
+
 
   get getHeroInBattle(): Hero[] {
     return [...this.battleHero.values()].reverse();

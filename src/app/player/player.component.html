@@ -9,7 +9,7 @@
   <div class="col">
     <div class="row">
       <h4>Heroes:</h4>
-      <div class="col-4" *ngFor="let heroBattle of getHeroInBattle" (click)="setHeroInBattle(heroBattle)">
+      <!-- <div class="col-4" *ngFor="let heroBattle of getHeroInBattle" (click)="setHeroInBattle(heroBattle)">
         <div class="card open-pointer border-0 border">
           <img class="card-img-top" [ngClass]="getRankCss(heroBattle.rarity)" [src]="heroBattle?.imgSrc" alt="Item image load failed"/>
           <span class="text-center">{{'Lv' + heroBattle.lv + ' ' + heroBattle.name}}</span>
@@ -17,12 +17,12 @@
             {{'HP: ' + currentHeroFighting?.hp}}
           </span>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
   <div class="col">
     <h4>Monsters: {{monsters.length}}</h4>
-    <div class="row d-flex justify-content-center">
+    <!-- <div class="row d-flex justify-content-center">
       <div class="col-8">
         <div class="card open-pointer border-0 border" *ngIf="monsters.length > 0">
           <img class="card-img-top" [ngClass]="getRankCss(monsters[0].isElite ? 5 : 1)" [src]="monsters[0].imgSrc"
@@ -30,7 +30,10 @@
           <span class="text-center">{{'Lv' + monsters[0].lv + ' ' + monsters[0].name + (monsters[0].isElite ? ' Elite Boss' : '')}}</span>
           <span class="text-center text-danger" *ngIf="gameState === states.fight">{{'HP: ' + currentMobFighting?.hp}}</span>
         </div>
-      </div>
-    </div>
+      </div> -->
+    <!-- </div> -->
   </div>
+</div>
+<div id="container-stage">
+
 </div>
