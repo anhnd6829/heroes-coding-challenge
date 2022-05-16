@@ -141,12 +141,12 @@ export class AnimationService {
     Object.keys(this.groupRecord).forEach(g => {
       const char = heroes.find((h) => h.id.toString() === g)!;
       const isDead = this.battleService.heroListDead.getValue().some(h => h.id === char.id);
-      if (isDead) {
-        this.groupRecord[+g].destroy();
-        delete this.groupRecord[+g];
-        this.battleService.battleHeroToAdd.next(char);
-        return;
-      }
+      // if (isDead) {
+      //   this.groupRecord[+g].destroy();
+      //   delete this.groupRecord[+g];
+      //   this.battleService.battleHeroToAdd.next(char);
+      //   return;
+      // }
       this.groupRecord[+g].getChildren((c) => c.name() === 'info')[0].destroy();
       const info = new Konva.Text({
         name: 'info',
@@ -423,12 +423,12 @@ export class AnimationService {
   }
 
   async initCurrentFightHeroAnimation(hero: Hero, callback?: () => void) {
-    await this.createAnimation(this.groupRecord[hero?.id], 150, 360, 1.5, callback );
+    await this.createAnimation(this.groupRecord[hero?.id], 150, 360, 1, callback );
   }
 
   async initCurrentFightMonsterAnimation(mob: Mob, callback?: () => void) {
     this.addMonsterLayout(mob?.imgSrc!, mob)
-    await this.createAnimation(this.monsterGroup, 700, 280, 1.5, callback );
+    await this.createAnimation(this.monsterGroup, 700, 280, 1, callback );
   }
 
   async createAnimation(group: Group | Shape, targetX: number, targetY: number, seccond: number, callback?: () => void) {

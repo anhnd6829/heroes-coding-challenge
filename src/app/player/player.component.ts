@@ -136,13 +136,13 @@ export class PlayerComponent implements OnInit, OnDestroy {
       this.currentHeroFighting = _.cloneDeep(this.battleService.currentHeroFighting);
     });
     this.battleService.setupFight(battleHeroIter);
+    this.animationService.updateStateButton(GAME_STATE.fightting);
     this.battleService.inItStatusHero();
     await this.animationService.initCurrentFightHeroAnimation(this.battleService.currentHeroFighting!, async () => {
       this.animationService.updateGroupPosition([...this.battleHero.keys()].filter(val => val !== (this.battleService.currentHeroFighting?.id)));
       this.battleService.inItStatusMob();
       await this.animationService.initCurrentFightMonsterAnimation(this.battleService.currentMobFighting!, () => {
         this.battleService.fightTurn.next(1);
-        this.animationService.updateStateButton(GAME_STATE.fightting);
       });
     });
   }

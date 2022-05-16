@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { ARMORS, CONFIG, MOBS, WEAPONS } from '../mock-data';
 import { Hero, Mob } from '../model/mob.model';
 import { SharedService } from '../shared.service';
@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { BehaviorSubject, Subject } from 'rxjs';
 import { MessageService } from '../message.service';
+import { AnimationService } from '../animation-service/animation.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +23,16 @@ export class BattleServiceService{
   currentHeroFighting: Hero | undefined;
   currentMobFighting: Mob | undefined;
   unsubcribe$ = new Subject();
+
+  animation?: AnimationService;
   constructor(
     private shared: SharedService,
+    // private animation: AnimationService,
     private messageService: MessageService,
-  ) { }
+    injector: Injector,
+  ) {
+    setTimeout(() => this.animation = injector.get(AnimationService))
+   }
 
   setHeroInBattle(hero: Hero) {
     this.battleHeroToAdd.next(hero);
@@ -138,6 +145,7 @@ export class BattleServiceService{
           this.heroListDead.next(list);
           this.currentHeroFighting = undefined;
           this.messageService.add(`This round Lose at turn ${this.fightTurn.getValue()}!`);
+          this.animation?.monsterGroup.destroy();
           this.fightTurn.next(-1);
           return;
         }
@@ -151,6 +159,7 @@ export class BattleServiceService{
           this.mobDead.next(this.currentMobFighting);
           this.currentMobFighting = undefined;
           this.messageService.add(`This round finished at turn ${this.fightTurn.getValue()}!`);
+          this.animation?.monsterGroup.destroy();
           this.fightTurn.next(-1);
           return;
         }
