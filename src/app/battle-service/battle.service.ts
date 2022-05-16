@@ -47,7 +47,7 @@ export class BattleService{
     return result > 0 ? result : 1;
   }
 
-  async spawnMonster(highestLevel: number, mobsSize: number): Promise<Mob[]> {
+  spawnMonster(highestLevel: number, mobsSize: number): Mob[] {
     if(this.mobList.length >= mobsSize) {
       return this.mobList;
     }
@@ -59,7 +59,7 @@ export class BattleService{
     return this.spawnMonster(highestLevel, mobsSize);
   }
 
-  prepareMonster(highestLevel: number, teamSize: number): Promise<Mob[]>  {
+  prepareMonster(highestLevel: number, teamSize: number): Mob[]  {
     this.mobList = [];
     const mobsSize = this.getRandomWithMax(teamSize * 2); // mobsSize of turn = random from 0 to teamSize * 2
     return this.spawnMonster(highestLevel, mobsSize);
@@ -117,10 +117,10 @@ export class BattleService{
       const percentCrit = CONFIG.baseDodgeCritChange * attacker.agi / defender.agi;
       const isCrit = this.shared.getRollDice(percentCrit);
       this.dealDamage(attacker, defender, isCrit, percentCrit, isDefenderAtk);
-    } else {
+    } else {// dodged the attack
       this.messageService.add(`${defender.name} dodged ${attacker.name} attack!`)
     }
-    if (isDefenderAtk) {
+    if (isDefenderAtk) {//next turn attack up
       this.fightTurn.next(this.fightTurn.getValue() + 1);
       return
     }

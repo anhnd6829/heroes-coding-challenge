@@ -137,7 +137,7 @@ export class PlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       } else if (turn > 0) {
         this.battleService.startFight();
       }
-      this.animationService.updateStateText( this.gameState);
+      this.animationService.updateStateText(this.gameState);
       this.animationService.updateFightingHpHero();
       this.animationService.updateFightingHpMob();
       this.fightTurn = turn;
@@ -181,11 +181,10 @@ export class PlayerComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     const highestLevel = Math.max(...[...[...this.battleHero.values()].map(val => {return val.lv})]);
-    this.battleService.prepareMonster(highestLevel, teamSize).then((monsters) => {
-      this.monsters = monsters;
-      this.messageService.add('Prepare turn Ended');
-      this.animationService.updateStateButton(GAME_STATE.fight);
-    });
+    const monsters = this.battleService.prepareMonster(highestLevel, teamSize);
+    this.monsters = monsters;
+    this.messageService.add('Prepare turn Ended');
+    this.animationService.updateStateButton(GAME_STATE.fight);
   }
 
   getRankCss(rank: number): string {
