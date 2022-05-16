@@ -17,3 +17,15 @@ h2 {
   color: #fff;
   background-color: #42545C;
 }
+
+.message-hub{
+  position: absolute;
+  top: 35vh;
+  left: 1.5em;
+  min-width: 250px;
+  max-width: 350px;
+}
+.messages-box {
+  overflow: auto;
+  height: 50vh;
+}

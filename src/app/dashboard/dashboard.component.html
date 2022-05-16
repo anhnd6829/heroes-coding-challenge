@@ -1,7 +1,9 @@
-<h2>Top Heroes</h2>
 <div class="heroes-menu">
-  <a *ngFor="let hero of heroes"
-    routerLink="/detail/{{hero.id}}">
-    {{hero.name}}
-  </a>
+  <div *ngFor="let hero of heroes" class="card square-20 border-0 border text-center text-primary open-pointer" (click)="setHeroInBattle(hero)">
+    <!-- <div>
+
+    </div> -->
+    <img class="card-img-top" [ngClass]="getRankCss(hero.rarity)" [src]="hero?.imgSrc" alt="Item image load failed"/>
+    <span class="text-center">{{hero.name}}</span>
+  </div>
 </div>

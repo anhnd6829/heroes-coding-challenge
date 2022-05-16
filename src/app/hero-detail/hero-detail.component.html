@@ -1,9 +1,162 @@
 <div *ngIf="hero">
-  <h2>{{hero.name | uppercase}} Details</h2>
-  <div><span>id: </span>{{hero.id}}</div>
-  <div>
-    <label for="hero-name">Hero name: </label>
-    <input id="hero-name" [(ngModel)]="hero.name" placeholder="Hero name"/>
+  <div class="row">
+    <div class="col-7">
+      <div class="card">
+        <div class="row no-gutters">
+          <div class="col-auto">
+            <img class="card-img-top" [ngClass]="getRankCss(hero.rarity)" [src]="hero?.imgSrc" alt="Item image load failed"/>
+          </div>
+          <div class="col">
+            <div class="card-block">
+              <br>
+              <h4>{{ hero.name | uppercase }}</h4>
+              <div>Rarity rank: {{ hero.rarity}}</div>
+              <div>Unlock cost: {{ hero.price}}</div>
+              <div>RankUp cost: {{ hero.rarity * hero.rarity * 100}}</div>
+              <br>
+              <strong>Attribute:</strong>
+              <div>Level: {{ hero.lv}}</div>
+              <div class="row">
+                <div class="col">
+                    Hp: {{ (hero.hp * hero.lv * hero.rarity + armor?.hp!)}} <span *ngIf="armor"
+                    [ngClass]="(armor?.hp!) >= 0 ? 'text-success': 'text-danger'">
+                      ({{armor?.hp!}})</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Atk: {{ hero.atk * hero.lv * hero.rarity + weapon?.atk!}} <span *ngIf="weapon"
+                  [ngClass]="(weapon?.atk!) >= 0 ? 'text-success': 'text-danger'">
+                    ({{weapon?.atk!}})</span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  Agi: {{ hero.agi * hero.lv * hero.rarity + weapon?.agi! + armor?.agi!}} <span  *ngIf="armor || weapon"
+                  [ngClass]="(weapon?.agi! + armor?.agi!) >= 0 ? 'text-success': 'text-danger'"
+                  class="text-success">({{ + weapon?.agi! + armor?.agi!}})</span>
+                </div>
+                <div class="col" *ngIf="!hero.isUnlocked">
+                  <strong>Locked</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer w-100 d-flex justify-content-between">
+          <button type="button" class="btn-danger" (click)="goBack()">Back</button>
+          <button type="button" class="btn-success" *ngIf="!hero?.isUnlocked" (click)="unlock(hero)">Unlock</button>
+          <button type="button" class="btn-success" (click)="upgrade(hero)">RankUp</button>
+          <button type="button" class="btn-success" (click)="train(hero)">Train</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-5">
+      <h2>Equipments</h2>
+      <div>
+        <div class="row">
+          <div class="col">
+            <h5>Armor:</h5>
+              <ng-container *ngIf="hero.currentArmorId else plusIconArmor">
+                <div class="card w-100" (click)="onOpenAddingArmor()">
+                  <img class="card-img-top" [src]="armor?.imgSrc" alt="Item image load failed"/>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <span>{{armor?.name}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <span>Hp: {{armor?.hp}}</span>
+                      </div>
+                      <div class="col">
+                        <span>Agi: {{armor?.agi}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-template #plusIconArmor>
+                <button type="button" class="btn mx-5" *ngIf="!isAddingArmor" (click)="onOpenAddingArmor()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-plus-square-dotted" viewBox="0 0 16 16">
+                    <path d="M2.5 0c-.166 0-.33.016-.487.048l.194.98A1.51 1.51 0 0 1 2.5 1h.458V0H2.5zm2.292 0h-.917v1h.917V0zm1.833 0h-.917v1h.917V0zm1.833 0h-.916v1h.916V0zm1.834 0h-.917v1h.917V0zm1.833 0h-.917v1h.917V0zM13.5 0h-.458v1h.458c.1 0 .199.01.293.029l.194-.981A2.51 2.51 0 0 0 13.5 0zm2.079 1.11a2.511 2.511 0 0 0-.69-.689l-.556.831c.164.11.305.251.415.415l.83-.556zM1.11.421a2.511 2.511 0 0 0-.689.69l.831.556c.11-.164.251-.305.415-.415L1.11.422zM16 2.5c0-.166-.016-.33-.048-.487l-.98.194c.018.094.028.192.028.293v.458h1V2.5zM.048 2.013A2.51 2.51 0 0 0 0 2.5v.458h1V2.5c0-.1.01-.199.029-.293l-.981-.194zM0 3.875v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zM0 5.708v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zM0 7.542v.916h1v-.916H0zm15 .916h1v-.916h-1v.916zM0 9.375v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zm-16 .916v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zm-16 .917v.458c0 .166.016.33.048.487l.98-.194A1.51 1.51 0 0 1 1 13.5v-.458H0zm16 .458v-.458h-1v.458c0 .1-.01.199-.029.293l.981.194c.032-.158.048-.32.048-.487zM.421 14.89c.183.272.417.506.69.689l.556-.831a1.51 1.51 0 0 1-.415-.415l-.83.556zm14.469.689c.272-.183.506-.417.689-.69l-.831-.556c-.11.164-.251.305-.415.415l.556.83zm-12.877.373c.158.032.32.048.487.048h.458v-1H2.5c-.1 0-.199-.01-.293-.029l-.194.981zM13.5 16c.166 0 .33-.016.487-.048l-.194-.98A1.51 1.51 0 0 1 13.5 15h-.458v1h.458zm-9.625 0h.917v-1h-.917v1zm1.833 0h.917v-1h-.917v1zm1.834-1v1h.916v-1h-.916zm1.833 1h.917v-1h-.917v1zm1.833 0h.917v-1h-.917v1zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                  </svg>
+                </button>
+              </ng-template>
+              <ng-container *ngIf="isAddingArmor">
+                <div class="card w-100 mt-2" *ngFor="let item of armors" (click)="onAddArmor(hero.id, item.id)">
+                  <img class="card-img-top" [src]="item?.imgSrc" alt="Item image load failed"/>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <span>{{item?.name}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <span>Hp: {{item?.hp}}</span>
+                      </div>
+                      <div class="col">
+                        <span>Agi: {{item?.agi}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+          </div>
+          <div class="col">
+            <h5>Weapon:</h5>
+            <ng-container *ngIf="hero.currentWeaponId else plusIconWeapon">
+              <div class="card w-100" (click)="onOpenAddingWeapon()">
+                <img class="card-img-top" [src]="weapon?.imgSrc" alt="Item image load failed"/>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col">
+                      <span>{{weapon?.name}}</span>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <span>Atk: {{weapon?.atk}}</span>
+                    </div>
+                    <div class="col">
+                      <span>Agi: {{weapon?.agi}}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+              <ng-template #plusIconWeapon>
+                <button type="button" class="btn mx-5" *ngIf="!isAddingWeapon" (click)="onOpenAddingWeapon()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" fill="currentColor" class="bi bi-plus-square-dotted" viewBox="0 0 16 16">
+                    <path d="M2.5 0c-.166 0-.33.016-.487.048l.194.98A1.51 1.51 0 0 1 2.5 1h.458V0H2.5zm2.292 0h-.917v1h.917V0zm1.833 0h-.917v1h.917V0zm1.833 0h-.916v1h.916V0zm1.834 0h-.917v1h.917V0zm1.833 0h-.917v1h.917V0zM13.5 0h-.458v1h.458c.1 0 .199.01.293.029l.194-.981A2.51 2.51 0 0 0 13.5 0zm2.079 1.11a2.511 2.511 0 0 0-.69-.689l-.556.831c.164.11.305.251.415.415l.83-.556zM1.11.421a2.511 2.511 0 0 0-.689.69l.831.556c.11-.164.251-.305.415-.415L1.11.422zM16 2.5c0-.166-.016-.33-.048-.487l-.98.194c.018.094.028.192.028.293v.458h1V2.5zM.048 2.013A2.51 2.51 0 0 0 0 2.5v.458h1V2.5c0-.1.01-.199.029-.293l-.981-.194zM0 3.875v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zM0 5.708v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zM0 7.542v.916h1v-.916H0zm15 .916h1v-.916h-1v.916zM0 9.375v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zm-16 .916v.917h1v-.917H0zm16 .917v-.917h-1v.917h1zm-16 .917v.458c0 .166.016.33.048.487l.98-.194A1.51 1.51 0 0 1 1 13.5v-.458H0zm16 .458v-.458h-1v.458c0 .1-.01.199-.029.293l.981.194c.032-.158.048-.32.048-.487zM.421 14.89c.183.272.417.506.69.689l.556-.831a1.51 1.51 0 0 1-.415-.415l-.83.556zm14.469.689c.272-.183.506-.417.689-.69l-.831-.556c-.11.164-.251.305-.415.415l.556.83zm-12.877.373c.158.032.32.048.487.048h.458v-1H2.5c-.1 0-.199-.01-.293-.029l-.194.981zM13.5 16c.166 0 .33-.016.487-.048l-.194-.98A1.51 1.51 0 0 1 13.5 15h-.458v1h.458zm-9.625 0h.917v-1h-.917v1zm1.833 0h.917v-1h-.917v1zm1.834-1v1h.916v-1h-.916zm1.833 1h.917v-1h-.917v1zm1.833 0h.917v-1h-.917v1zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                  </svg>
+                </button>
+              </ng-template>
+              <ng-container *ngIf="isAddingWeapon">
+                <div class="card w-100 mt-2" *ngFor="let item of weapons" (click)="onAddWeapon(hero.id, item.id)">
+                  <img class="card-img-top" [src]="item?.imgSrc" alt="Item image load failed"/>
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col">
+                        <span>{{item?.name}}</span>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <span>Atk: {{item?.atk}}</span>
+                      </div>
+                      <div class="col">
+                        <span>Agi: {{item?.agi}}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <button (click)="goBack()">go back</button>
 </div>
